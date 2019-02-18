@@ -23,10 +23,14 @@ namespace MyRGB
         BindingSource aaaaa = new BindingSource();
         static Message_t msgOut = new Message_t();
 
+        Zone_t[] zones;
+
         private void Form1_Load(object sender, EventArgs e)
         {
             msgOut.Magic = Message_t.MESSAGE_MAGIC;
-            Thread communicateThread = new Thread(CommunicateTask);
+            //Thread communicateThread = new Thread(CommunicateTask);
+
+            zones = new Zone_t[8];
 
             for (int i = 0; i < 8; i++)
             {
@@ -43,12 +47,14 @@ namespace MyRGB
                 zone.Name = $"Zone {zone.ID}";
                 zone.Mode = mode;
 
+                zones[i] = zone;
+
                 RadioButton radio = new RadioButton();
                 radio.Name = $"zoneRadio{i + 1}";
                 radio.Text = zone.Name;
                 radio.AutoSize = true;
                 radio.CheckedChanged += ZoneChanged;
-                radio.Tag = zone;
+                radio.Tag = i;
 
                 if (i == 0) radio.Checked = true;
 
@@ -56,34 +62,39 @@ namespace MyRGB
             }
 
             //GetArduinoPort();
-            communicateThread.Start();
+            //communicateThread.Start();
 
             //modeCombo.SelectedIndex = 0;
             //rgbModeCombo.SelectedIndex = 0;
 
         }
 
-        private static Zone_t currentZone = null;
+        private int currentZoneID;
 
         private void ZoneChanged(object sender, EventArgs e)
         {
             RadioButton radio = sender as RadioButton;
             if (radio.Checked)
             {
-                currentZone = radio.Tag as Zone_t;
-                tabControl1.SelectedIndex = (int)currentZone.Mode.Name;
+                currentZoneID = (int)radio.Tag;//radio.Tag as Zone_t;
+
+
+                //zones[currentZoneID].Mode.Name = Mode_t.Audio;
+
+
+                tabControl1.SelectedIndex = (int)zones[currentZoneID].Mode.Name - 1;
 
                 staticColorWheel.DataBindings.Clear();
-                staticColorWheel.DataBindings.Add(new Binding("HSL", currentZone.Mode.StaticColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
+                staticColorWheel.DataBindings.Add(new Binding("HSL", zones[currentZoneID].Mode.StaticColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
 
                 theaterChaseDelayNum.DataBindings.Clear();
-                theaterChaseDelayNum.DataBindings.Add(new Binding("Value", currentZone.Mode, "TheaterChaseDelay"));
+                theaterChaseDelayNum.DataBindings.Add(new Binding("Value", zones[currentZoneID].Mode, "TheaterChaseDelay"));
 
                 theaterColorWheel.DataBindings.Clear();
-                theaterColorWheel.DataBindings.Add(new Binding("HSL", currentZone.Mode.TheaterChaseColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
+                theaterColorWheel.DataBindings.Add(new Binding("HSL", zones[currentZoneID].Mode.TheaterChaseColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
 
 
-                var theaterChaseStaticBinding = new Binding("Checked", currentZone.Mode, "TheaterChaseRainbow");
+                var theaterChaseStaticBinding = new Binding("Checked", zones[currentZoneID].Mode, "TheaterChaseRainbow");
                 theaterChaseStaticBinding.Format += (s, args) => args.Value = ((bool)args.Value) == false;
                 theaterChaseStaticBinding.Parse += (s, args) => args.Value = !(bool)args.Value;
                 theaterChaseStaticRadio.DataBindings.Clear();
@@ -91,19 +102,19 @@ namespace MyRGB
 
 
                 theaterChaseRainbowRadio.DataBindings.Clear();
-                theaterChaseRainbowRadio.DataBindings.Add(new Binding("Checked", currentZone.Mode, "TheaterChaseRainbow"));
+                theaterChaseRainbowRadio.DataBindings.Add(new Binding("Checked", zones[currentZoneID].Mode, "TheaterChaseRainbow"));
 
                 rainbowDelayNum.DataBindings.Clear();
-                rainbowDelayNum.DataBindings.Add(new Binding("Value", currentZone.Mode, "RainbowDelay"));
+                rainbowDelayNum.DataBindings.Add(new Binding("Value", zones[currentZoneID].Mode, "RainbowDelay"));
 
                 rainbowCycleCb.DataBindings.Clear();
-                rainbowCycleCb.DataBindings.Add(new Binding("Checked", currentZone.Mode, "RainbowCycle"));
+                rainbowCycleCb.DataBindings.Add(new Binding("Checked", zones[currentZoneID].Mode, "RainbowCycle"));
 
                 wipeColorWheel.DataBindings.Clear();
-                wipeColorWheel.DataBindings.Add(new Binding("HSL", currentZone.Mode.WipeColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
+                wipeColorWheel.DataBindings.Add(new Binding("HSL", zones[currentZoneID].Mode.WipeColor, "HSL", false, DataSourceUpdateMode.OnPropertyChanged));
 
                 wipeDelayNum.DataBindings.Clear();
-                wipeDelayNum.DataBindings.Add(new Binding("Value", currentZone.Mode, "WipeDelay"));
+                wipeDelayNum.DataBindings.Add(new Binding("Value", zones[currentZoneID].Mode, "WipeDelay"));
             }
         }
 
@@ -130,11 +141,11 @@ namespace MyRGB
 
         private void button3_Click(object sender, EventArgs e)
         {
-            ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+            ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
             mode.Name = Mode_t.Static;
 
             msgOut.Command = Command_t.SetMode;
-            msgOut.Zone = (ushort)currentZone.ID;
+            msgOut.Zone = (ushort)zones[currentZoneID].ID;
             msgOut.Parameter0 = 0;
             msgOut.Parameter1 = (ushort)((ushort)mode.Name << 8);
 
@@ -147,11 +158,11 @@ namespace MyRGB
         {
             if (staticLiveCheck.Checked)
             {
-                ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+                ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
                 mode.Name = Mode_t.Static;
 
                 msgOut.Command = Command_t.SetMode;
-                msgOut.Zone = (ushort)currentZone.ID;
+                msgOut.Zone = (ushort)zones[currentZoneID].ID;
                 msgOut.Parameter0 = 0;
                 msgOut.Parameter1 = (ushort)((ushort)mode.Name << 8);
 
@@ -164,11 +175,11 @@ namespace MyRGB
 
         private void applyMode2Btn_Click(object sender, EventArgs e)
         {
-            ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+            ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
             mode.Name = Mode_t.Theaterchase;
 
             msgOut.Command = Command_t.SetMode;
-            msgOut.Zone = (ushort)currentZone.ID;
+            msgOut.Zone = (ushort)zones[currentZoneID].ID;
             msgOut.Parameter0 = (ushort)mode.TheaterChaseDelay;
             msgOut.Parameter1 = (ushort)((ushort)mode.Name << 8 | (mode.TheaterChaseRainbow ? 1:0));
 
@@ -179,9 +190,9 @@ namespace MyRGB
 
         private void rainbowApplyBtn_Click(object sender, EventArgs e)
         {
-            ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+            ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
             mode.Name = Mode_t.Rainbow;
-            msgOut.Zone = (ushort)currentZone.ID;
+            msgOut.Zone = (ushort)zones[currentZoneID].ID;
             msgOut.Command = Command_t.SetMode;
 
             msgOut.Parameter0 = (ushort)mode.RainbowDelay;
@@ -193,12 +204,12 @@ namespace MyRGB
         private void wipeApply_Click(object sender, EventArgs e)
         {
 
-            ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+            ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
 
             mode.Name = Mode_t.Wipe;
 
             msgOut.Command = Command_t.SetMode;
-            msgOut.Zone = (ushort)currentZone.ID;
+            msgOut.Zone = (ushort)zones[currentZoneID].ID;
             msgOut.Parameter0 = (ushort)mode.WipeDelay;
             msgOut.Parameter1 = (ushort)((ushort)mode.Name << 8 | 0);
             mode.WipeColor.ToColor_t(ref msgOut.Color);
@@ -208,13 +219,13 @@ namespace MyRGB
 
         private void audioApplyBtn_Click(object sender, EventArgs e)
         {
-            ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
+             ZoneMode_t mode = zones[currentZoneID].Mode ;
 
             mode.Name = Mode_t.Audio;
 
             msgOut.Command = Command_t.SetMode;
-            msgOut.Zone = (ushort)currentZone.ID;
-            //msgOut.Parameter0 = (ushort)mode.WipeDelay;
+            msgOut.Zone = (ushort)zones[currentZoneID].ID;
+            msgOut.Parameter0 = (ushort)divideNum.Value;
             msgOut.Parameter1 = (ushort)((ushort)mode.Name << 8 | 0);
             //mode.WipeColor.ToColor_t(ref msgOut.Color);
             SendData();
@@ -230,34 +241,34 @@ namespace MyRGB
         }
 
 
-        static void CommunicateTask()
-        {
-            Message_t msgOut = new Message_t();
-            msgOut.Magic = Message_t.MESSAGE_MAGIC;
-            msgOut.Command = Command_t.SetColorAll;
-            while (true)
-            {
-                if (currentZone.Mode != null)
-                {
-                    ZoneMode_t mode = currentZone.Mode as ZoneMode_t;
-                    mode.Name = Mode_t.Static;
+        //static void CommunicateTask()
+        //{
+        //    Message_t msgOut = new Message_t();
+        //    msgOut.Magic = Message_t.MESSAGE_MAGIC;
+        //    msgOut.Command = Command_t.SetColorAll;
+        //    while (true)
+        //    {
+        //        if (zones[currentZoneID].Mode != null)
+        //        {
+        //            ZoneMode_t mode = zones[currentZoneID].Mode as ZoneMode_t;
+        //            mode.Name = Mode_t.Static;
 
-                    msgOut.Command = Command_t.SetMode;
-                    msgOut.Parameter1 = (ushort)((ushort)currentZone.ID << 8 | (byte)mode.Name);
+        //            msgOut.Command = Command_t.SetMode;
+        //            msgOut.Parameter1 = (ushort)((ushort)zones[currentZoneID].ID << 8 | (byte)mode.Name);
 
-                    mode.StaticColor.ToColor_t(ref msgOut.Color);
+        //            mode.StaticColor.ToColor_t(ref msgOut.Color);
 
-                    //SendData();
-                }
+        //            //SendData();
+        //        }
             
                 
 
                 
 
 
-                Thread.Sleep(500);
-            }
-        }
+        //        Thread.Sleep(500);
+        //    }
+        //}
 
 
         static SerialPort p = null;

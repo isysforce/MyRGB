@@ -20,7 +20,7 @@ namespace MyRGB
         public bool TheaterChaseRainbow { get; set; }
 
         public int RainbowDelay { get; set; } = 10;
-        public bool RainbowCycle { get; set; }
+        public bool RainbowCycle { get; set; } = true;
 
         public int WipeDelay { get; set; } = 50;
         public ColorWheel_t WipeColor { get; set; }

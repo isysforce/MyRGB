@@ -57,9 +57,11 @@
             this.wipeDelayNum = new System.Windows.Forms.NumericUpDown();
             this.wipeColorWheel = new Unclassified.UI.ColorWheel();
             this.tabPage5 = new System.Windows.Forms.TabPage();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.tabPage6 = new System.Windows.Forms.TabPage();
+            this.label6 = new System.Windows.Forms.Label();
+            this.divideNum = new System.Windows.Forms.NumericUpDown();
             this.audioApplyBtn = new System.Windows.Forms.Button();
+            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.rgbNum)).BeginInit();
@@ -70,6 +72,7 @@
             this.tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wipeDelayNum)).BeginInit();
             this.tabPage6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.divideNum)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -422,15 +425,10 @@
             this.tabPage5.Text = "Flash";
             this.tabPage5.UseVisualStyleBackColor = true;
             // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 79);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(250, 334);
-            this.flowLayoutPanel1.TabIndex = 25;
-            // 
             // tabPage6
             // 
+            this.tabPage6.Controls.Add(this.label6);
+            this.tabPage6.Controls.Add(this.divideNum);
             this.tabPage6.Controls.Add(this.audioApplyBtn);
             this.tabPage6.Location = new System.Drawing.Point(4, 39);
             this.tabPage6.Name = "tabPage6";
@@ -440,15 +438,48 @@
             this.tabPage6.Text = "Audio";
             this.tabPage6.UseVisualStyleBackColor = true;
             // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(107, 119);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(71, 30);
+            this.label6.TabIndex = 34;
+            this.label6.Text = "Divide";
+            // 
+            // divideNum
+            // 
+            this.divideNum.Location = new System.Drawing.Point(178, 117);
+            this.divideNum.Maximum = new decimal(new int[] {
+            65535,
+            0,
+            0,
+            0});
+            this.divideNum.Name = "divideNum";
+            this.divideNum.Size = new System.Drawing.Size(120, 35);
+            this.divideNum.TabIndex = 33;
+            this.divideNum.Value = new decimal(new int[] {
+            100,
+            0,
+            0,
+            0});
+            // 
             // audioApplyBtn
             // 
-            this.audioApplyBtn.Location = new System.Drawing.Point(6, 6);
+            this.audioApplyBtn.Location = new System.Drawing.Point(77, 190);
             this.audioApplyBtn.Name = "audioApplyBtn";
             this.audioApplyBtn.Size = new System.Drawing.Size(95, 41);
             this.audioApplyBtn.TabIndex = 32;
             this.audioApplyBtn.Text = "Apply";
             this.audioApplyBtn.UseVisualStyleBackColor = true;
             this.audioApplyBtn.Click += new System.EventHandler(this.audioApplyBtn_Click);
+            // 
+            // flowLayoutPanel1
+            // 
+            this.flowLayoutPanel1.Location = new System.Drawing.Point(12, 79);
+            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(250, 334);
+            this.flowLayoutPanel1.TabIndex = 25;
             // 
             // Form1
             // 
@@ -478,6 +509,8 @@
             this.tabPage4.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.wipeDelayNum)).EndInit();
             this.tabPage6.ResumeLayout(false);
+            this.tabPage6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.divideNum)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -516,6 +549,8 @@
         private System.Windows.Forms.NumericUpDown wipeDelayNum;
         private System.Windows.Forms.TabPage tabPage6;
         private System.Windows.Forms.Button audioApplyBtn;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.NumericUpDown divideNum;
     }
 }
 

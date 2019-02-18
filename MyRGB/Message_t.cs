@@ -12,6 +12,7 @@ namespace MyRGB
     {
         InvalidMessage = 0,
         InvalidRequest,
+        InvalidParameter,
         Ping,
         Pong,
         SetColor,
